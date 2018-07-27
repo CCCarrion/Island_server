@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="source">
+      <UniqueIdentifier>{86326447-7c35-43a8-81a7-aa698d719f04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\tool">
+      <UniqueIdentifier>{e4586205-3145-4860-91cc-ff966e4092e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\network">
+      <UniqueIdentifier>{2ff565dc-eee8-4390-ba9f-98f3b2a745c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\network\private">
+      <UniqueIdentifier>{78ad3c03-dce0-40cf-bc12-93c2fc188267}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\network\public">
+      <UniqueIdentifier>{95c5b0cf-ccca-4fc8-854c-fddeafda04bb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\network\NetManager.h">
+      <Filter>source\network</Filter>
+    </ClInclude>
+    <ClInclude Include="source\network\publlic\ConnectLayer.h">
+      <Filter>source\network\public</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\main.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\network\private\ConnectLayer.cpp">
+      <Filter>source\network\private</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

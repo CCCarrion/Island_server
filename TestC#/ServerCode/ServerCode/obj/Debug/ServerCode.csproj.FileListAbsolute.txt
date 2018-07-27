@@ -1,0 +1,6 @@
+E:\Project\Susu\server\TestC#\ServerCode\ServerCode\bin\Debug\ServerCode.exe
+E:\Project\Susu\server\TestC#\ServerCode\ServerCode\bin\Debug\ServerCode.pdb
+E:\Project\Susu\server\TestC#\ServerCode\ServerCode\obj\Debug\ServerCode.csprojResolveAssemblyReference.cache
+E:\Project\Susu\server\TestC#\ServerCode\ServerCode\obj\Debug\ServerCode.csproj.CoreCompileInputs.cache
+E:\Project\Susu\server\TestC#\ServerCode\ServerCode\obj\Debug\ServerCode.exe
+E:\Project\Susu\server\TestC#\ServerCode\ServerCode\obj\Debug\ServerCode.pdb
