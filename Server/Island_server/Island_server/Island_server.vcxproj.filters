@@ -16,6 +16,24 @@
     <Filter Include="source\network\public">
       <UniqueIdentifier>{95c5b0cf-ccca-4fc8-854c-fddeafda04bb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\helper">
+      <UniqueIdentifier>{5aeebe37-c37b-4f7f-b8c4-d7af6f7df995}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\helper\public">
+      <UniqueIdentifier>{aabdb64b-e019-4045-8969-61f563137ea5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\framework">
+      <UniqueIdentifier>{0ef7f0fe-409d-4535-a692-3a67b6b579c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\global">
+      <UniqueIdentifier>{c00eaba8-11a7-477e-b667-bf04e4f906ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\framework\private">
+      <UniqueIdentifier>{be5690e2-588c-4627-b1c1-50e8834addee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\debugger">
+      <UniqueIdentifier>{b3fd743b-05fa-4949-b7ed-28f3e0305f0e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\network\NetManager.h">
@@ -24,12 +42,36 @@
     <ClInclude Include="source\network\publlic\ConnectLayer.h">
       <Filter>source\network\public</Filter>
     </ClInclude>
+    <ClInclude Include="source\helper\ISL_Helper.h">
+      <Filter>source\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\ServerFlow.h">
+      <Filter>source\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="source\global\ISL_Def.h">
+      <Filter>source\global</Filter>
+    </ClInclude>
+    <ClInclude Include="source\helper\public\ISL_Instance.h">
+      <Filter>source\helper\public</Filter>
+    </ClInclude>
+    <ClInclude Include="source\global\ISL_Macro.h">
+      <Filter>source\global</Filter>
+    </ClInclude>
+    <ClInclude Include="source\debugger\ISL_Debugger.h">
+      <Filter>source\debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\main.cpp">
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\network\private\ConnectLayer.cpp">
+      <Filter>source\network\private</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\private\ServerFlow.cpp">
+      <Filter>source\framework\private</Filter>
+    </ClCompile>
+    <ClCompile Include="source\network\private\NetManager.cpp">
       <Filter>source\network\private</Filter>
     </ClCompile>
   </ItemGroup>
