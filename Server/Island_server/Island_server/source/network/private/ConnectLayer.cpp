@@ -40,7 +40,6 @@ ISL_RESULT_CODE ISL_Listener::CreateListener(const char* ipAddr, USHORT pport)
 		return ISL_NET_ERR;
 	}
 
-
 }
 
 ISL_RESULT_CODE ISL_Listener::Tick()
@@ -50,27 +49,61 @@ ISL_RESULT_CODE ISL_Listener::Tick()
 	SOCKET sClient;
 	sockaddr_in remoteAddr;
 	int nAddrlen = sizeof(remoteAddr);
-	while (true)
-	{
-		//printf("等待连接...\n");
-		sClient = accept(_socket, (SOCKADDR *)&remoteAddr, &nAddrlen);
-		if (sClient == INVALID_SOCKET)
-		{
-			//没有就退出
-			break;
-		}
 
+	//printf("等待连接...\n");
+	sClient = accept(_socket, (SOCKADDR *)&remoteAddr, &nAddrlen);
+	_cnnSocketList.push_back(sClient);
+
+   
+	
+	for(SOCKET soc : _cnnSocketList)
+	{
 		//接收数据  
-		int ret = recv(sClient, _revData, 255, 0);
+		int ret = recv(soc, _revData, 255, 0);
 		if (ret > 0)
 		{
 			_revData[ret] = 0x00;
 		}
 		ISL_Logger(_revData);
+
+		//临时代码
+		//数据转换消息
+		char* tempBuffer = _tempBuffer;
+		char* cBatchID = strtok_s(_revData, "|", &tempBuffer);
+		char* cMsgType = strtok_s(NULL, "|", &tempBuffer);
+		char* cMsgContent = strtok_s(NULL, "|", &tempBuffer);
+
+		char* pSend = _sendBuffer;
+
+		const char* cServerRespond = "Server has Get Your Msg";
+		while (*cBatchID != '\0')
+		{
+			*pSend = *cBatchID;
+			cBatchID++;
+			pSend++;
+		}
+		*pSend++ = '|';
+		while (*cMsgType != '\0')
+		{
+			*pSend = *cMsgType;
+			cMsgType++;
+			pSend++;
+		}
+		*pSend++ = '|';
+		while (*cServerRespond != '\0')
+		{
+			*pSend = *cServerRespond;
+			cServerRespond++;
+			pSend++;
+		}
+
+		*pSend = '\0';
+
+
 		//发送数据  
-		const char * sendData = "你好，TCP客户端！\n";
-		send(sClient, sendData, strlen(sendData), 0);
-		closesocket(sClient);
+		send(soc, _sendBuffer, strlen(_sendBuffer), 0);
+		//closesocket(sClient);
+	
 	}
 
 	return ISL_OK;

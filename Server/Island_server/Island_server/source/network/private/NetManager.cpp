@@ -31,7 +31,6 @@ ISL_RESULT_CODE ISL_NET::ISL_NetManager::Tick()
 	ISL_RESULT_CODE rst = ISL_OK;
 	rst = _listener->Tick();
 	//CHECKRST_FAILRETURN(rst)
-	AAA(rst);
 
 	return ISL_OK;
 }

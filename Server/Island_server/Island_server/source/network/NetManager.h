@@ -4,6 +4,8 @@
 #include "source/global/ISL_Def.h"
 #include "public/ConnectLayer.h"
 
+#include <thread>
+
 namespace ISL_NET
 {
 
@@ -22,6 +24,9 @@ namespace ISL_NET
 
 	private:
 		ISL_Listener * _listener;
+		std::thread _acceptThrd;
+		std::thread _revThrd;
+		std::thread _sendThrd;
 	};
 
 

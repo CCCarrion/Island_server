@@ -1,6 +1,8 @@
 #pragma once
 #include "source/global/ISL_Def.h"
 #include <WinSock2.h>
+#include <vector>
+
 
 namespace ISL_NET
 {
@@ -17,6 +19,11 @@ namespace ISL_NET
 	private:
 		SOCKET _socket;
 		char _revData[255];
+
+		char _tempBuffer[255];
+		char _sendBuffer[255];
+
+		std::vector<SOCKET> _cnnSocketList;
 	};
 
 

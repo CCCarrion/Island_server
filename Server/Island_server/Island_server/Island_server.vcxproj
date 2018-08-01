@@ -119,12 +119,13 @@
   <ItemGroup>
     <ClInclude Include="source\debugger\ISL_Debugger.h" />
     <ClInclude Include="source\framework\ServerFlow.h" />
+    <ClInclude Include="source\global\ISL_ConstDef.h" />
     <ClInclude Include="source\global\ISL_Def.h" />
     <ClInclude Include="source\global\ISL_Macro.h" />
     <ClInclude Include="source\helper\ISL_Helper.h" />
     <ClInclude Include="source\helper\public\ISL_Instance.h" />
     <ClInclude Include="source\network\NetManager.h" />
-    <ClInclude Include="source\network\publlic\ConnectLayer.h" />
+    <ClInclude Include="source\network\public\ConnectLayer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\framework\private\ServerFlow.cpp" />
