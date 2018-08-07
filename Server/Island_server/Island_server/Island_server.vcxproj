@@ -117,6 +117,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="source\data\ISL_DataDef.h" />
+    <ClInclude Include="source\debugger\ISL_DebugDef.h" />
     <ClInclude Include="source\debugger\ISL_Debugger.h" />
     <ClInclude Include="source\framework\ServerFlow.h" />
     <ClInclude Include="source\global\ISL_ConstDef.h" />
@@ -124,13 +126,18 @@
     <ClInclude Include="source\global\ISL_Macro.h" />
     <ClInclude Include="source\helper\ISL_Helper.h" />
     <ClInclude Include="source\helper\public\ISL_Instance.h" />
+    <ClInclude Include="source\network\ISL_NetDef.h" />
     <ClInclude Include="source\network\NetManager.h" />
     <ClInclude Include="source\network\public\ConnectLayer.h" />
+    <ClInclude Include="source\network\public\ISL_IO.h" />
+    <ClInclude Include="source\network\public\ISL_NetWorker.h" />
+    <ClInclude Include="source\tool\thread\ISL_MultiThread.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\framework\private\ServerFlow.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\network\private\ConnectLayer.cpp" />
+    <ClCompile Include="source\network\private\ISL_NetWorker.cpp" />
     <ClCompile Include="source\network\private\NetManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

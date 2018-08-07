@@ -34,6 +34,18 @@
     <Filter Include="source\debugger">
       <UniqueIdentifier>{b3fd743b-05fa-4949-b7ed-28f3e0305f0e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\data">
+      <UniqueIdentifier>{83ad8415-3194-45a8-8140-cc6663c7a1d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\debugger\private">
+      <UniqueIdentifier>{883a7deb-f36f-4a19-b44e-0191975e4e39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\data\private">
+      <UniqueIdentifier>{d2202da3-160d-4307-b508-61771e0a735b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\tool\thread">
+      <UniqueIdentifier>{41a879da-db9b-46d9-916a-8b69e26ef81d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\network\NetManager.h">
@@ -63,6 +75,24 @@
     <ClInclude Include="source\network\public\ConnectLayer.h">
       <Filter>source\network\public</Filter>
     </ClInclude>
+    <ClInclude Include="source\debugger\ISL_DebugDef.h">
+      <Filter>source\debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="source\network\ISL_NetDef.h">
+      <Filter>source\network</Filter>
+    </ClInclude>
+    <ClInclude Include="source\data\ISL_DataDef.h">
+      <Filter>source\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\network\public\ISL_NetWorker.h">
+      <Filter>source\network\public</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tool\thread\ISL_MultiThread.h">
+      <Filter>source\tool\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="source\network\public\ISL_IO.h">
+      <Filter>source\network\public</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\main.cpp">
@@ -75,6 +105,9 @@
       <Filter>source\framework\private</Filter>
     </ClCompile>
     <ClCompile Include="source\network\private\NetManager.cpp">
+      <Filter>source\network\private</Filter>
+    </ClCompile>
+    <ClCompile Include="source\network\private\ISL_NetWorker.cpp">
       <Filter>source\network\private</Filter>
     </ClCompile>
   </ItemGroup>

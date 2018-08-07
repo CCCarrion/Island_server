@@ -1,8 +1,6 @@
 #include "../NetManager.h"
 #include "source/global/ISL_Macro.h"
-#include "../public/ConnectLayer.h"
 
-#pragma comment(lib,"ws2_32.lib")
 
 
 ISL_RESULT_CODE ISL_NET::ISL_NetManager::InitNetwork()
@@ -35,6 +33,11 @@ ISL_RESULT_CODE ISL_NET::ISL_NetManager::Tick()
 	return ISL_OK;
 }
 
+
+ISL_RESULT_CODE ISL_NET::ISL_NetManager::SendMSG(T_USER_ID userID, void* data)
+{
+
+}
 
 ISL_NET::ISL_NetManager::~ISL_NetManager()
 {

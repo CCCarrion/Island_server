@@ -1,0 +1,50 @@
+#pragma once
+
+#include "source/global/ISL_Def.h"
+#include "source/tool/thread/ISL_MultiThread.h"
+#include "../public/ISL_IO.h"
+#include  <map>
+
+using namespace ISL_TOOL;
+
+namespace ISL_NET {
+
+
+
+	class ISL_NET_Work_Indicator :public ISL_Worker_Indicator
+	{
+	public:
+
+		ISL_NET_IOCP_Work	*pAttachedWork;
+
+		ISL_NET_OpType workType;
+	};
+
+
+
+
+
+	class ISL_NET_IOCP_Work {
+
+	public:
+		static void arsWork(ISL_Worker_Indicator& worker_info);
+
+		bool AssociateWithIOCP(ISL_PER_SOCKET_CONTEXT* pSocCTX);
+
+		HANDLE                      hIOCompletionPort;
+		bool						bEndWork;
+	private:
+		bool _PostAccept(ISL_PER_IO_CONTEXT* pIoContext);
+		bool _PostRecv(ISL_PER_IO_CONTEXT* pIoContext);
+		bool _PostSend(ISL_PER_IO_CONTEXT* pIoContext);
+
+		void _DoAccept(ISL_PER_SOCKET_CONTEXT* pSockerCtx, ISL_PER_IO_CONTEXT* pIoContext);
+		void _DoSend(ISL_PER_SOCKET_CONTEXT* pSockerCtx, ISL_PER_IO_CONTEXT* pIoContext);
+		void _DoRecv(ISL_PER_SOCKET_CONTEXT* pSockerCtx, ISL_PER_IO_CONTEXT* pIoContext);
+
+
+		std::map<SOCKET, ISL_PER_SOCKET_CONTEXT*> _mapSocketCtx;
+
+
+	};
+}
