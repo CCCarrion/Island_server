@@ -31,6 +31,7 @@ namespace ISL_NET
 
 		ISL_RESULT_CODE SendMSG(T_USER_ID userID, void* data);
 
+		ISL_RESULT_CODE RecvMSG(T_USER_ID userID, void* data,DWORD dataLen);
 
 	private:
 		ISL_Listener * _listener;

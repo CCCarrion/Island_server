@@ -1,7 +1,7 @@
 
 #include "../ISL_NetDef.h"
 #include "../public/ISL_NetWorker.h"
-#include "../public/ISL_IO.h"
+#include "../NetManager.h"
 #include <Mswsock.h>
 
 
@@ -84,6 +84,106 @@ void ISL_NET::ISL_NET_IOCP_Work::arsWork(ISL_Worker_Indicator& worker_info)
 
 }
 
+ISL_RESULT_CODE ISL_NET::ISL_NET_IOCP_Work::InitWork()
+{
+	WORD sockVersion = MAKEWORD(2, 2);
+	WSADATA wsaData;
+	if (WSAStartup(sockVersion, &wsaData) != 0)
+	{
+		return ISL_NET_ERR;
+	}
+
+	hIOCompletionPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
+
+
+	if (hIOCompletionPort == NULL)
+	{
+		//获取复用端口出错
+
+		return ISL_NET_ERR;
+	}
+
+	
+
+	return ISL_OK;
+
+}
+
+ISL_RESULT_CODE ISL_NET::ISL_NET_IOCP_Work::StartWork(USHORT port)
+{
+
+	_listenerCtx.sBindSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+	if (INVALID_SOCKET == _listenerCtx.sBindSocket)
+	{
+		//创建端口失败
+		return ISL_NET_ERR;
+	}
+
+
+
+	SOCKADDR_IN localAddr;
+
+	localAddr.sin_family = AF_INET;
+	localAddr.sin_port = htons(port);
+	char ipAddr[255];
+	gethostname(ipAddr, 255);
+	struct hostent FAR* lpHostEnt = gethostbyname(ipAddr);
+	if (lpHostEnt == NULL)
+	{
+		localAddr.sin_addr.S_un.S_addr = INADDR_ANY;
+	}
+	else
+	{
+		//inet_pton(AF_INET, lpHostEnt->h_addr_list[0], &localAddr.sin_addr);
+		localAddr.sin_addr.s_addr = inet_addr(lpHostEnt->h_addr_list[0]);
+	}
+
+
+	if (bind(_listenerCtx.sBindSocket, (LPSOCKADDR)&localAddr, sizeof(localAddr)) == SOCKET_ERROR)
+	{
+		//printf("bind error !");
+
+		return ISL_NET_ERR;
+	}
+
+	// 开始进行监听
+	if (SOCKET_ERROR == listen(_listenerCtx.sBindSocket, SOMAXCONN))
+	{
+		//
+		return ISL_NET_ERR;
+	}
+
+
+	_listenerCtx.ioCtxReuse._opType = ACCEPT_POSTED;
+
+
+	//Todo  多个Accept
+	_PostAccept(&_listenerCtx.ioCtxReuse);
+
+}
+
+
+void ISL_NET::ISL_NET_IOCP_Work::SendData(SOCKET skt, byte* datBufr, DWORD datlen)
+{
+
+	auto itKV = _mapSocketCtx.find(skt);
+
+	if (itKV->first != skt)
+	{
+		//没有找到 
+
+		return;
+	}
+
+	ISL_PER_SOCKET_CONTEXT* pSocCtx = itKV->second;
+
+
+	ISL_PER_IO_CONTEXT*  pIoCtx = pSocCtx->GetNewIoContext();
+	
+	//投递发送
+	_PostSend(pIoCtx);
+}
+
 bool ISL_NET::ISL_NET_IOCP_Work::AssociateWithIOCP(ISL_PER_SOCKET_CONTEXT* pSocCTX)
 {
 	// 将用于和客户端通信的SOCKET绑定到完成端口中
@@ -96,6 +196,25 @@ bool ISL_NET::ISL_NET_IOCP_Work::AssociateWithIOCP(ISL_PER_SOCKET_CONTEXT* pSocC
 	}
 
 	return true;
+}
+
+ISL_RESULT_CODE ISL_NET::ISL_NET_IOCP_Work::EndWork()
+{
+
+	//关闭监听socket
+	closesocket(_listenerCtx.sBindSocket);
+
+
+
+
+}
+
+ISL_RESULT_CODE ISL_NET::ISL_NET_IOCP_Work::DeInitWork()
+{
+	// 关闭IOCP句柄
+	CloseHandle(hIOCompletionPort);
+
+	WSACleanup();
 }
 
 bool ISL_NET::ISL_NET_IOCP_Work::_PostAccept(ISL_PER_IO_CONTEXT* pIoContext)
@@ -131,7 +250,7 @@ void ISL_NET::ISL_NET_IOCP_Work::_DoAccept(ISL_PER_SOCKET_CONTEXT* pSocketCtx, I
 	AssociateWithIOCP(pSocketCtx);
 
 	//通知等待接受
-	_PostRecv(&(pSocketCtx->recvData));
+	_PostRecv(&(pSocketCtx->ioCtxReuse));
 
 
 	pIoContext->ResetBuffer();
@@ -149,7 +268,7 @@ bool ISL_NET::ISL_NET_IOCP_Work::_PostSend(ISL_PER_IO_CONTEXT* pIoContext)
 	OVERLAPPED *p_ol = &pIoContext->_overlapped;
 
 	// 初始化完成后，，投递WSARecv请求
-	int nBytesRecv = WSASend(pIoContext->_socket,p_wbuf,1,&dwBytes,dwFlags,p_ol,NULL);
+	int nBytesRecv = WSASend(pIoContext->_socket,p_wbuf,1,&(pIoContext->_dwBytes),dwFlags,p_ol,NULL);
 
 	// 如果返回值错误，并且错误的代码并非是Pending的话，那就说明这个重叠请求失败了
 	if ((SOCKET_ERROR == nBytesRecv) && (WSA_IO_PENDING != WSAGetLastError()))
@@ -162,6 +281,8 @@ bool ISL_NET::ISL_NET_IOCP_Work::_PostSend(ISL_PER_IO_CONTEXT* pIoContext)
 
 void ISL_NET::ISL_NET_IOCP_Work::_DoSend(ISL_PER_SOCKET_CONTEXT* pSockerCtx, ISL_PER_IO_CONTEXT* pIoContext)
 {
+	//把消息移除
+	pSockerCtx->RemoveIoCtx(pIoContext);
 
 }
 
@@ -176,7 +297,7 @@ bool ISL_NET::ISL_NET_IOCP_Work::_PostRecv(ISL_PER_IO_CONTEXT* pIoContext)
 	pIoContext->ResetBuffer();
 
 	// 初始化完成后，，投递WSARecv请求
-	int nBytesRecv = WSARecv(pIoContext->_socket, p_wbuf, 1, &(pIoContext->dwBytes), &dwFlags, p_ol, NULL);
+	int nBytesRecv = WSARecv(pIoContext->_socket, p_wbuf, 1, &(pIoContext->_dwBytes), &dwFlags, p_ol, NULL);
 
 	// 如果返回值错误，并且错误的代码并非是Pending的话，那就说明这个重叠请求失败了
 	if ((SOCKET_ERROR == nBytesRecv) && (WSA_IO_PENDING != WSAGetLastError()))
@@ -192,9 +313,9 @@ bool ISL_NET::ISL_NET_IOCP_Work::_PostRecv(ISL_PER_IO_CONTEXT* pIoContext)
 void ISL_NET::ISL_NET_IOCP_Work::_DoRecv(ISL_PER_SOCKET_CONTEXT* pSockerCtx, ISL_PER_IO_CONTEXT* pIoContext)
 {
 	//处理消息
-
-
-
+	ISL_NetManager* pNetMgr =  ISL_NetManager::GetInstance();
+	
+	pNetMgr->RecvMSG(pSockerCtx->sBindUser, pIoContext->_wsabuf.buf, pIoContext->_dwBytes);
 
 	//重新等待接受
 	_PostRecv(pIoContext);

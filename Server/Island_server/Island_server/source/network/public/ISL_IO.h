@@ -1,8 +1,8 @@
 #pragma once
 
-#include <list>
 #include <WinSock2.h>
 #pragma comment(lib,"ws2_32.lib")
+#include <algorithm>
 
 #define MAX_BUFFER_LEN 8192
 #define SOCKET_WAIT_SEND_COUNT_PRESET 64
@@ -49,58 +49,85 @@ namespace ISL_NET
 
 	struct ISL_PER_SOCKET_CONTEXT
 	{
+		T_USER_ID		sBindUser;
 		SOCKET			sBindSocket;
 		SOCKADDR_IN		addr;
 
-		ISL_PER_IO_CONTEXT recvData;
-		std::list<ISL_PER_IO_CONTEXT*> listSendData;
+		ISL_PER_IO_CONTEXT ioCtxReuse;
+		std::vector<ISL_PER_IO_CONTEXT*> vecSendData;
 		
 		ISL_PER_SOCKET_CONTEXT()
-			:listSendData(SOCKET_WAIT_SEND_COUNT_PRESET)
+			:vecSendData(SOCKET_WAIT_SEND_COUNT_PRESET)
 		{		
-			recvData._opType = RECV_POSTED;
-			recvData._socket = sBindSocket;
+			ioCtxReuse._opType = RECV_POSTED;
+			ioCtxReuse._socket = sBindSocket;
 		}
 
 		~ISL_PER_SOCKET_CONTEXT()
 		{
 			closesocket(sBindSocket);
 
-			for (ISL_PER_IO_CONTEXT* pctx:listSendData)
+			for (ISL_PER_IO_CONTEXT* pctx:vecSendData)
 			{
 				delete pctx;
 			}
-			listSendData.clear();
+			vecSendData.clear();
 		}
 
 
 		// 添加一个新的IoContext
 		ISL_PER_IO_CONTEXT* GetNewIoContext()
 		{
-			ISL_PER_IO_CONTEXT* p = new ISL_PER_IO_CONTEXT;
+			ISL_PER_IO_CONTEXT* p = new ISL_PER_IO_CONTEXT();
+			p->_socket = sBindSocket;
+			p->_opType = SEND_POSTED;
 
-			listSendData.push_back(p);
+
+			vecSendData.push_back(p);
 			return p;
 		}
 
-		// 取出并移除IoContext
-		ISL_PER_IO_CONTEXT* GetIoContext()
+		//// 取出并移除IoContext
+		//ISL_PER_IO_CONTEXT* GetIoContext()
+		//{
+		//	ISL_PER_IO_CONTEXT* p = listSendData.front();
+		//	listSendData.pop_front();
+		//	return p;
+		//}
+
+		bool RemoveIoCtx(ISL_PER_IO_CONTEXT* pIoCtx)
 		{
-			ISL_PER_IO_CONTEXT* p = listSendData.front();
-			listSendData.pop_front();
-			return p;
-		}
+			if (pIoCtx->_socket != sBindSocket)
+			{
+				//socket不一致
 
-		
+				return false;
+			}
+
+			std::vector<ISL_PER_IO_CONTEXT*>::iterator itEnd = vecSendData.end();
+
+			auto itIoCtx = std::remove(vecSendData.begin(), itEnd, pIoCtx);
+
+			if (itIoCtx == itEnd)
+			{
+				//没有找到
+				return false;
+			}
+
+			//删除 释放内存
+			delete *itIoCtx;
+
+			vecSendData.erase(itIoCtx, itEnd);
+			
+			return true;
+		}
 
 
 
 	};
 
 
-
-
 	
-	LPFN_ACCEPTEX                m_lpfnAcceptEx;                // AcceptEx 和 GetAcceptExSockaddrs 的函数指针，用于调用这两个扩展函数
-	LPFN_GETACCEPTEXSOCKADDRS    m_lpfnGetAcceptExSockAddrs;
+	//LPFN_ACCEPTEX                m_lpfnAcceptEx;                // AcceptEx 和 GetAcceptExSockaddrs 的函数指针，用于调用这两个扩展函数
+	//LPFN_GETACCEPTEXSOCKADDRS    m_lpfnGetAcceptExSockAddrs;
 }

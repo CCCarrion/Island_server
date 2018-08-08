@@ -17,7 +17,6 @@ namespace ISL_NET {
 
 		ISL_NET_IOCP_Work	*pAttachedWork;
 
-		ISL_NET_OpType workType;
 	};
 
 
@@ -29,8 +28,16 @@ namespace ISL_NET {
 	public:
 		static void arsWork(ISL_Worker_Indicator& worker_info);
 
+		ISL_RESULT_CODE InitWork();
+		ISL_RESULT_CODE StartWork(USHORT port);
+
+
+		void SendData(SOCKET skt, byte* datBufr,DWORD datlen);
+
 		bool AssociateWithIOCP(ISL_PER_SOCKET_CONTEXT* pSocCTX);
 
+		ISL_RESULT_CODE EndWork();
+		ISL_RESULT_CODE	DeInitWork();
 		HANDLE                      hIOCompletionPort;
 		bool						bEndWork;
 	private:
@@ -44,7 +51,7 @@ namespace ISL_NET {
 
 
 		std::map<SOCKET, ISL_PER_SOCKET_CONTEXT*> _mapSocketCtx;
-
+		ISL_PER_SOCKET_CONTEXT _listenerCtx;
 
 	};
 }
