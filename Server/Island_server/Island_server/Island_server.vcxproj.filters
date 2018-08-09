@@ -46,6 +46,15 @@
     <Filter Include="source\tool\thread">
       <UniqueIdentifier>{41a879da-db9b-46d9-916a-8b69e26ef81d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\msg">
+      <UniqueIdentifier>{6589f9a6-a603-4f3b-aca5-460b482cd5c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TestCode">
+      <UniqueIdentifier>{7bbd524c-9d58-4c10-a267-85c3dfa0015b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TestCode\net">
+      <UniqueIdentifier>{0e5409b5-bedb-4f58-a63f-f30c782042cc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\network\NetManager.h">
@@ -72,9 +81,6 @@
     <ClInclude Include="source\global\ISL_ConstDef.h">
       <Filter>source\global</Filter>
     </ClInclude>
-    <ClInclude Include="source\network\public\ConnectLayer.h">
-      <Filter>source\network\public</Filter>
-    </ClInclude>
     <ClInclude Include="source\debugger\ISL_DebugDef.h">
       <Filter>source\debugger</Filter>
     </ClInclude>
@@ -93,13 +99,16 @@
     <ClInclude Include="source\network\public\ISL_IO.h">
       <Filter>source\network\public</Filter>
     </ClInclude>
+    <ClInclude Include="source\msg\ISL_MsgDef.h">
+      <Filter>source\msg</Filter>
+    </ClInclude>
+    <ClInclude Include="testCode\net\TestMSGProc.h">
+      <Filter>TestCode\net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\main.cpp">
       <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="source\network\private\ConnectLayer.cpp">
-      <Filter>source\network\private</Filter>
     </ClCompile>
     <ClCompile Include="source\framework\private\ServerFlow.cpp">
       <Filter>source\framework\private</Filter>

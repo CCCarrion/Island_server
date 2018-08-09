@@ -13,7 +13,7 @@ namespace ISL_TOOL
 	public:
 		int nThreadID;
 
-		void(*fWork)(ISL_Worker_Indicator&);  //函数指针
+		void(*fWork)(ISL_Worker_Indicator*);  //函数指针
 
 
 		//todo：信号量通知继续工作和通知工作完成和结束
@@ -25,27 +25,25 @@ namespace ISL_TOOL
 
 
 	//线程入口
-	void _ThreadEntry(ISL_Worker_Indicator& worker_info) 
+	inline void _ThreadEntry(ISL_Worker_Indicator* worker_info)
 	{
 
-		while (!worker_info.bEndThread)
+		while (!worker_info->bEndThread)
 		{			
-			worker_info.mtxWorkerState.lock();
-			if (worker_info.fWork != nullptr)
+			worker_info->mtxWorkerState.lock();
+			if (worker_info->fWork != nullptr)
 			{
 				//执行工作
-				worker_info.fWork(worker_info);
+				worker_info->fWork(worker_info);
 			}
-			worker_info.mtxWorkerState.unlock();
-			std::unique_lock<std::mutex> lk(worker_info.mtxWorkerState);
-			worker_info.cvWaitNewWork.wait(lk);
+			worker_info->mtxWorkerState.unlock();
+			std::unique_lock<std::mutex> lk(worker_info->mtxWorkerState);
+			worker_info->cvWaitNewWork.wait(lk);
 		}
-
-
 	}
 
 	//建立线程
-	std::thread _CreateWorkerThread(ISL_Worker_Indicator& worker_info)
+	inline std::thread _CreateWorkerThread(ISL_Worker_Indicator* worker_info)
 	{
 		return std::thread(_ThreadEntry, worker_info);
 	}

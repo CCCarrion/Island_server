@@ -1,3 +1,2 @@
-﻿  ConnectLayer.cpp
-e:\project\susu\server\server\island_server\island_server\source\network\private\connectlayer.cpp(43): warning C4715: “ISL_NET::ISL_Listener::CreateListener”: 不是所有的控件路径都返回值
+﻿  NetManager.cpp
   Island_server.vcxproj -> E:\Project\Susu\server\Server\Island_server\Debug\Island_server.exe

@@ -1,11 +1,14 @@
 #pragma once
 
 #include <WinSock2.h>
-#pragma comment(lib,"ws2_32.lib")
+#include <Mswsock.h>
+
+#include <vector>
 #include <algorithm>
 
 #define MAX_BUFFER_LEN 8192
 #define SOCKET_WAIT_SEND_COUNT_PRESET 64
+
 
 
 namespace ISL_NET
@@ -49,7 +52,7 @@ namespace ISL_NET
 
 	struct ISL_PER_SOCKET_CONTEXT
 	{
-		T_USER_ID		sBindUser;
+		T_CONN_ID		nBindConnID;
 		SOCKET			sBindSocket;
 		SOCKADDR_IN		addr;
 
@@ -81,7 +84,6 @@ namespace ISL_NET
 			ISL_PER_IO_CONTEXT* p = new ISL_PER_IO_CONTEXT();
 			p->_socket = sBindSocket;
 			p->_opType = SEND_POSTED;
-
 
 			vecSendData.push_back(p);
 			return p;
@@ -128,6 +130,5 @@ namespace ISL_NET
 
 
 	
-	//LPFN_ACCEPTEX                m_lpfnAcceptEx;                // AcceptEx 和 GetAcceptExSockaddrs 的函数指针，用于调用这两个扩展函数
-	//LPFN_GETACCEPTEXSOCKADDRS    m_lpfnGetAcceptExSockAddrs;
+	
 }

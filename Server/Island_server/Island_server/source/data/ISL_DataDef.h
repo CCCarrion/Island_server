@@ -3,11 +3,5 @@
 
 
 
-
-
-
-
-
-
-typedef unsigned long T_USER_ID
+typedef unsigned long T_USER_ID;
 

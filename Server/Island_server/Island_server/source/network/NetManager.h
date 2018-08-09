@@ -2,16 +2,17 @@
 
 #include "source/helper/ISL_Helper.h"
 #include "source/global/ISL_Def.h"
-#include "public/ConnectLayer.h"
 #include "public/ISL_NetWorker.h"
 
-#include <thread>
+#include "source/tool/thread/ISL_MultiThread.h"
+#include "source/network/ISL_NetDef.h"
+#include "source/msg/ISL_MsgDef.h"
 
 namespace ISL_NET
 {
 
 	using namespace ISL_HELPER;
-
+	using namespace ISL_MSG;
 
 	class ISL_NetManager : public ISL_Instance<ISL_NetManager>
 	{
@@ -28,20 +29,22 @@ namespace ISL_NET
 
 		ISL_RESULT_CODE Stop();
 
+		ISL_RESULT_CODE SendMSG(T_CONN_ID connID, ISL_MsgBase* pMSG);
 
-		ISL_RESULT_CODE SendMSG(T_USER_ID userID, void* data);
+		ISL_RESULT_CODE RecvMSG(T_CONN_ID connID, char* data,DWORD dataLen);
 
-		ISL_RESULT_CODE RecvMSG(T_USER_ID userID, void* data,DWORD dataLen);
+		int GetNetWorkerNum() { return _maxWorkersNum; };
 
 	private:
-		ISL_Listener * _listener;
 
 		int _maxWorkersNum;
 		std::thread* _arsWorkers;
-		std::thread* _sendWorker;
+		ISL_TOOL::ISL_Worker_Indicator* _workerIndicators;
 
 		ISL_NET_IOCP_Work _netWork;
-		std::map<T_USER_ID, SOCKET> _mapUserSocket;
+		
+		
+		
 	};
 
 

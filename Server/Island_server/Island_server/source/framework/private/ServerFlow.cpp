@@ -21,6 +21,9 @@ ISL_RESULT_CODE ServerFlow::InitServer()
 	netMnger->InitNetwork();
 
 
+	//Todo ÁÙÊ±
+	netMnger->Start();
+
 
 	return ISL_OK;
 }

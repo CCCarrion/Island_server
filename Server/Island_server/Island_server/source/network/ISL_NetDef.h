@@ -1,5 +1,8 @@
 #pragma once
 
 
+typedef unsigned long T_CONN_ID;
 
-#define ISL_NET_CODE_QUEUE_OUT -1
+
+
+
