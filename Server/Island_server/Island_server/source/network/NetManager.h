@@ -39,7 +39,7 @@ namespace ISL_NET
 
 		int _maxWorkersNum;
 		std::thread* _arsWorkers;
-		ISL_TOOL::ISL_Worker_Indicator* _workerIndicators;
+		ISL_NET_Work_Indicator* _workerIndicators;
 
 		ISL_NET_IOCP_Work _netWork;
 		

@@ -48,6 +48,15 @@ namespace ISL_NET
 		{
 			ZeroMemory(_szBuffer, MAX_BUFFER_LEN);
 		}
+
+		~ISL_PER_IO_CONTEXT()
+		{
+			if (_socket != INVALID_SOCKET)
+			{
+				closesocket(_socket);
+				_socket = INVALID_SOCKET;
+			}
+		}
 	};
 
 	struct ISL_PER_SOCKET_CONTEXT
@@ -81,7 +90,7 @@ namespace ISL_NET
 		// 添加一个新的IoContext
 		ISL_PER_IO_CONTEXT* GetNewIoContext()
 		{
-			ISL_PER_IO_CONTEXT* p = new ISL_PER_IO_CONTEXT();
+			ISL_PER_IO_CONTEXT* p = new ISL_PER_IO_CONTEXT;
 			p->_socket = sBindSocket;
 			p->_opType = SEND_POSTED;
 

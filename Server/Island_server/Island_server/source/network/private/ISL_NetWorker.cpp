@@ -196,6 +196,8 @@ ISL_RESULT_CODE ISL_NET::ISL_NET_IOCP_Work::StartWork(USHORT port)
 
 
 
+	AssociateWithIOCP(&_listenerCtx);
+
 	_listenerCtx.ioCtxReuse._opType = ACCEPT_POSTED;
 
 	_curMaxCONN = 0;
@@ -295,16 +297,14 @@ ISL_NET::ISL_PER_IO_CONTEXT* ISL_NET::ISL_NET_IOCP_Work::CreateIOCtx(T_CONN_ID c
 
 bool ISL_NET::ISL_NET_IOCP_Work::_PostAccept(ISL_PER_IO_CONTEXT* pIoContext)
 {
-	//预建立socket 加入map
+	//预建立socket
 	SOCKET preSocket = WSASocketW(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
-	ISL_PER_SOCKET_CONTEXT* pPreSocketCTX = new ISL_PER_SOCKET_CONTEXT();
-	pPreSocketCTX->sBindSocket = preSocket;
-
+	pIoContext->_socket = preSocket;
 
 	DWORD dwBytes = 0;
 
 	//异步接收
-	_lpfnAcceptEx(pIoContext->_socket, pPreSocketCTX->sBindSocket, &(pIoContext->_wsabuf.buf), pIoContext->_wsabuf.len - ((sizeof(SOCKADDR_IN) + 16) * 2), sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16, &dwBytes, &(pIoContext->_overlapped));
+	_lpfnAcceptEx(_listenerCtx.sBindSocket, pIoContext->_socket, pIoContext->_wsabuf.buf, pIoContext->_wsabuf.len - ((sizeof(SOCKADDR_IN) + 16) * 2), sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16, &dwBytes, &(pIoContext->_overlapped));
 	
 
 	return ISL_OK;
@@ -313,24 +313,28 @@ bool ISL_NET::ISL_NET_IOCP_Work::_PostAccept(ISL_PER_IO_CONTEXT* pIoContext)
 
 void ISL_NET::ISL_NET_IOCP_Work::_DoAccept(ISL_PER_SOCKET_CONTEXT* pSocketCtx, ISL_PER_IO_CONTEXT* pIoContext)
 {
+	ISL_PER_SOCKET_CONTEXT* pPreSocketCTX = new ISL_PER_SOCKET_CONTEXT();
+	pPreSocketCTX->sBindSocket = pIoContext->_socket;
+
 	SOCKADDR_IN* ClientAddr = NULL;
 	SOCKADDR_IN* LocalAddr = NULL;
 	int remoteLen = sizeof(SOCKADDR_IN), localLen = sizeof(SOCKADDR_IN);
 
 	_lpfnGetAcceptExSockAddrs(pIoContext->_wsabuf.buf, pIoContext->_wsabuf.len - ((sizeof(SOCKADDR_IN) + 16) * 2), localLen + 16, remoteLen + 16, (LPSOCKADDR*)&LocalAddr, &localLen, (LPSOCKADDR*)&ClientAddr, &remoteLen);
 		
-	pSocketCtx->addr = *ClientAddr;
+	pPreSocketCTX->addr = *ClientAddr;
 	//注册链接
-	_mapSocketCtx.emplace(++_curMaxCONN, pSocketCtx);
-	pSocketCtx->nBindConnID = _curMaxCONN;
+	_mapSocketCtx.emplace(++_curMaxCONN, pPreSocketCTX);
+	pPreSocketCTX->nBindConnID = _curMaxCONN;
 
 	//端口与socket绑定
-	AssociateWithIOCP(pSocketCtx);
+	AssociateWithIOCP(pPreSocketCTX);
 
 
 
 	//通知等待接受
-	_PostRecv(&(pSocketCtx->ioCtxReuse));
+	pPreSocketCTX->ioCtxReuse._socket = pPreSocketCTX->sBindSocket;
+	_PostRecv(&(pPreSocketCTX->ioCtxReuse));
 
 
 	pIoContext->ResetBuffer();
@@ -376,6 +380,9 @@ bool ISL_NET::ISL_NET_IOCP_Work::_PostRecv(ISL_PER_IO_CONTEXT* pIoContext)
 	OVERLAPPED *p_ol = &pIoContext->_overlapped;
 
 	pIoContext->ResetBuffer();
+
+	////测试
+	//int testi = recv(pIoContext->_socket, pIoContext->_wsabuf.buf, pIoContext->_wsabuf.len, 0);
 
 	// 初始化完成后，，投递WSARecv请求
 	int nBytesRecv = WSARecv(pIoContext->_socket, p_wbuf, 1, &(pIoContext->_dwBytes), &dwFlags, p_ol, NULL);

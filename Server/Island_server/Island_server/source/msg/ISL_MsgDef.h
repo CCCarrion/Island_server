@@ -20,20 +20,19 @@ namespace ISL_MSG
 	inline ISL_RESULT_CODE DecodeMSG(ISL_MsgBase* msgData,char* pBuf, DWORD dataLen)
 	{
 
-		*(pBuf + dataLen) = '\0';
+		//*(pBuf + dataLen) = '\0';
 
-		char* tempBuffer = new char[dataLen+64];
+		char tempBuffer[1024 + 64];
+		char *pTemp = tempBuffer;
 
-		char* cBatchID = strtok_s(pBuf, "|", &tempBuffer);
-		char* cMsgType = strtok_s(NULL, "|", &tempBuffer);
-		char* cMsgContent = strtok_s(NULL, "|", &tempBuffer);
+		char* cBatchID = strtok_s(pBuf, "|", &pTemp);
+		char* cMsgType = strtok_s(NULL, "|", &pTemp);
+		char* cMsgContent = strtok_s(NULL, "|", &pTemp);
 
 		msgData->msgType = atoi(cMsgType);
 		msgData->msgBatch = atol(cBatchID);
 		strcpy_s(msgData->content, cMsgContent);
 
-
-		delete[dataLen + 64] tempBuffer;
 		return ISL_OK;
 	};
 

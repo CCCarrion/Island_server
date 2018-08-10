@@ -1,5 +1,6 @@
 #include "../NetManager.h"
 #include "source/global/ISL_Macro.h"
+#include "source/debugger/ISL_Debugger.h"
 
 using namespace ISL_MSG;
 
@@ -50,6 +51,7 @@ ISL_RESULT_CODE ISL_NET::ISL_NetManager::Start()
 	for (int i = 0; i < _maxWorkersNum; i++)
 	{		
 		(_workerIndicators + i)->fWork = ISL_NET_IOCP_Work::arsWork;
+		(_workerIndicators + i)->pAttachedWork = &_netWork;
 
 		(_workerIndicators + i)->cvWaitNewWork.notify_all();
 	}
@@ -102,6 +104,12 @@ ISL_RESULT_CODE ISL_NET::ISL_NetManager::RecvMSG(T_CONN_ID connID, char* data, D
 	ISL_MsgBase* recvMsg = new ISL_MsgBase();
 	ISL_MSG::DecodeMSG(recvMsg, data, dataLen);
 
+	//打印消息
+	std::cout << connID << std::endl;
+	std::cout << recvMsg->msgBatch << std::endl;
+	std::cout << recvMsg->msgType << std::endl;
+	std::cout << recvMsg->content << std::endl;
+
 
 	//把消息传递出去进行处理
 
@@ -141,6 +149,6 @@ ISL_NET::ISL_NetManager::~ISL_NetManager()
 
 	_netWork.DeInitWork();
 
-	delete[_maxWorkersNum] _arsWorkers;
-	delete[_maxWorkersNum] _workerIndicators;
+	delete[] _arsWorkers;
+	delete[] _workerIndicators;
 }
